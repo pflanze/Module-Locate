@@ -14,4 +14,5 @@ Module::Build->new(
              'IO::File'              => 0,
              'Carp'                  => 0,
   },
+  create_makefile_pl => 'passthrough',
 )->create_build_script;

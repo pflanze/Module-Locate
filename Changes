@@ -1,5 +1,8 @@
 Revision history for Perl extension Module::Locate
 
+1.5 Wed Jan  7 13:22:05 GMT 2004
+  * added the ubiquitous "Makefile.PL" (thanks "Module::Build"!)
+
 1.4 Mon Dec 15 10:52:41 GMT 2003
   * now backward compatible with 5.00503
 

@@ -5,6 +5,7 @@ t/03regex.t
 t/04isloaded.t
 t/MLtest/hereiam.pm
 Build.PL
+Makefile.PL
 MANIFEST
 Changes
 README

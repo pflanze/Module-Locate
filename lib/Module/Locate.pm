@@ -1,7 +1,7 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.4;
+  $VERSION  = 1.5;
   $Cache    = 0;
   $Global   = 1;
 
@@ -242,6 +242,16 @@ symbol table loaded (checks by walking the C<%main::> stash).
 =head1 Changes
 
 =over 4
+
+=item 1.5
+
+=over 8
+
+=item *
+
+added the ubiquitous C<Makefile.PL> (thanks C<Module::Build>!)
+
+=back
 
 =item 1.4
 
