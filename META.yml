@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: Module-Locate
-version: 1.2
+version: 1.3
 license: perl
 distribution_type: module
 requires:
@@ -14,5 +14,5 @@ conflicts: {}
 provides:
   Module::Locate:
     file: lib/Module/Locate.pm
-    version: 1.2
-generated_by: Module::Build version 0.19
+    version: 1.3
+generated_by: Module::Build version 0.21

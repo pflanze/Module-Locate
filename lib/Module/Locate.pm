@@ -1,7 +1,7 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.2;
+  $VERSION  = 1.3;
   $Cache    = 0;
   $Global   = 1;
 
@@ -101,9 +101,7 @@
         if -f catfile($_, $path);
     }
 
-    # croak("Can't locate $path in \@INC (\@INC contains: @INC")
-    return
-      unless defined $paths[0];
+    return unless @paths > 0;
 
     $INC{$path} = $paths[0]
       if $Module::Locate::Global;
@@ -131,11 +129,11 @@
 
   sub acts_like_fh {
     no strict 'refs';
-    return !!( ref $_[0] and (
+    return ( ref $_[0] and (
          ( ref $_[0] eq 'GLOB' and defined *{$_[0]}{IO} )
       or ( UNIVERSAL::isa($_[0], 'IO::Handle')          )
       or ( overload::Method($_[0], '<>')                )
-    ) );
+    ) or ref \$_[0] eq 'GLOB' and defined *{$_[0]}{IO}  );
   }
 
   sub is_mod_loaded {
@@ -200,30 +198,30 @@ without having to evaluate the code they contain.
 =item C<import>
 
 Given function names, the appropriate functions will be exported into the
-callers package.
+caller's package.
 
-If C<Global =E<gt> BOOL> is passed in, then the all the results for module
-searche i.e using C<locate>, will also be stored in C<%INC>, just like
+If C<:all> is passed then all subroutines are exported.
+
+If C<Global =E<gt> BOOL> is passed, then the results for module
+searches i.e using C<locate>, will also be stored in C<%INC>, like
 C<require>. This is B<on> by default.
 
-If C<Cache =E<gt> BOOL> is passed in, then every subsequent search for a module
+If C<Cache =E<gt> BOOL> is passed, then every subsequent search for a module
 will just use the path stored in C<%INC>, as opposed to performing another
 search. This is B<off> by default.
 
-iF C<:all> is passed in then all subroutines are exported.
-
 =item C<locate>
 
-Given a module (in standard perl bareword format) locate the path of the module.
-If called in a scalar context the first path found will be returned, if called
-in a list context a list of paths where the module was found. Also, if
-references have been placed in C<@INC> then a filehandle will be returned, as
-defined in the C<require> documentation. An empty C<return> is used if the
-module couldn't be located.
+Given a module name as a string (in standard perl bareword format) locate the
+path of the module. If called in a scalar context the first path found will be
+returned, if called in a list context a list of paths where the module was
+found. Also, if references have been placed in C<@INC> then a filehandle will
+be returned, as defined in the C<require> documentation. An empty C<return> is
+used if the module couldn't be located.
 
 =item C<get_source>
 
-When provided with a package name, retrieve the source of the C<.pm> that is
+When provided with a package name, retrieve the source of the module that is
 found.
 
 =item C<acts_like_fh>
@@ -233,12 +231,12 @@ is a bareword filehandle, then if it inherits from C<IO::Handle> and lastly if
 it overloads the C<E<lt>E<gt>> operator. If this is missing any other standard
 filehandle behaviour, please send me an e-mail.
 
-=item C<is_mod_loaded()>
+=item C<is_mod_loaded>
 
-Given a module (like L<locate()>), return true if the module has been loaded
+Given a module (like C<locate()>), return true if the module has been loaded
 (i.e exists in the C<%INC> hash).
 
-=item C<is_pkg_loaded()>
+=item C<is_pkg_loaded>
 
 Given a package name (like C<locate()>), check if the package has an existing
 symbol table loaded (checks by walking the C<%main::> stash).
@@ -248,6 +246,20 @@ symbol table loaded (checks by walking the C<%main::> stash).
 =head1 Changes
 
 =over 4
+
+=item 1.3
+
+=over 8
+
+=item *
+
+Tidied up POD.
+
+=item *
+
+C<acts_like_fh()> now tests plain globs i.e C<*FH>
+
+=back
 
 =item 1.2
 
