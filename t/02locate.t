@@ -1,4 +1,4 @@
-use Test::More tests => 24;
+use Test::More tests => 22;
 
 use strict;
 use warnings;
@@ -16,25 +16,19 @@ can_ok(__PACKAGE__, 'locate');
 my($test_mod, $test_fn) = qw( MLtest::hereiam t/MLtest/hereiam.pm );
 
 {
-  my $path;
-  eval { $path = locate($test_mod) };
+  my $path = locate($test_mod);
   
-  # no. 2, 3, 4
-  warn "no. 2: $@" if $@;
-  ok( $@ eq '', "locate had no errors");
+  # no. 2, 3
   ok( defined $path, "\$path was assigned something");
   like( $path, qr{\Q$test_fn\E\z},
         "module found in predicted place: $path");
 
   shift @INC;
-  local $@;
-  undef $path;
 
-  eval { $path = locate($test_mod) };
+  $path = locate($test_mod);
 
-  # no. 5, 6
-  ok( $@, "\$@ was set");
-  like( $@, qr/Can't locate/, "found expected error message");
+  # no. 4
+  ok( not($path), "locate() couldn't find what wasn't there");
 }
 
 {
@@ -43,7 +37,7 @@ my($test_mod, $test_fn) = qw( MLtest::hereiam t/MLtest/hereiam.pm );
     $fh
   };
 
-  # no. 7, 8
+  # no. 5, 6
   my $f;
   ok( $f = locate($test_mod), 'simple FH coderef in INC' );
   ok( Module::Locate::acts_like_fh($f), "$f is deigned to be a filehandle");
@@ -52,7 +46,7 @@ my($test_mod, $test_fn) = qw( MLtest::hereiam t/MLtest/hereiam.pm );
 
   $INC[0] = sub { IO::File->new($test_fn) };
   
-  # no. 9, 10
+  # no. 7, 8
   ok( $f = locate($test_mod), 'IO::File coderef in INC');
   ok( Module::Locate::acts_like_fh($f), "$f is deigned to be a filehandle");
 
@@ -60,20 +54,20 @@ my($test_mod, $test_fn) = qw( MLtest::hereiam t/MLtest/hereiam.pm );
 
   $INC[0] = sub { bless [], 'MLtest::iohandle' };
   
-  # no. 11, 12
+  # no. 9, 10
   ok( $f = locate($test_mod), 'IO::Handle object coderef in INC');
   ok( Module::Locate::acts_like_fh($f), "$f is deigned to be a filehandle");
 
   $INC[0] = sub { bless [], 'MLtest::overloaded' };
   
-  # no. 13, 14
+  # no. 11, 12
   ok( $f = locate($test_mod), 'overloaded object coderef in INC');
   ok( Module::Locate::acts_like_fh($f), "$f is deigned to be a filehandle");
 
   $INC[0] = sub { bless [], 'MLtest::nought' };
   
   undef $f;
-  # no. 15, 16
+  # no. 13, 14
   eval { $f = locate($test_mod) };
   like( $@, qr/invalid \@INC/, 'b0rken object coderef in INC');
   ok( !defined($f), "\$f is not a filehandle");
@@ -84,7 +78,7 @@ my($test_mod, $test_fn) = qw( MLtest::hereiam t/MLtest/hereiam.pm );
   
   my $f;
 
-  # no. 17, 18
+  # no. 15, 16
   ok( $f = locate($test_mod), 'IO::File arrayrefin INC');
   ok( Module::Locate::acts_like_fh($f), "$f is deigned to be a filehandle");
 
@@ -92,7 +86,7 @@ my($test_mod, $test_fn) = qw( MLtest::hereiam t/MLtest/hereiam.pm );
   $INC[0] = [ sub { "fooey" } ];
   undef $f;
 
-  # no. 19, 20
+  # no. 17, 18
   eval { $f = locate($test_mod) };
   like( $@, qr/invalid \@INC/, 'b0rken arrayref return in INC');
   ok( !defined($f), "\$f is not a filehandle");
@@ -103,7 +97,7 @@ my($test_mod, $test_fn) = qw( MLtest::hereiam t/MLtest/hereiam.pm );
   
   my $f;
 
-  # no. 21, 22
+  # no. 19, 20
   ok( $f = locate($test_mod), 'IO::File object INC');
   ok( Module::Locate::acts_like_fh($f), "$f is deigned to be a filehandle");
 
@@ -111,7 +105,7 @@ my($test_mod, $test_fn) = qw( MLtest::hereiam t/MLtest/hereiam.pm );
   $INC[0] = bless [], 'MLtest::b0rkobj';
   undef $f;
 
-  # no. 23, 24
+  # no. 21, 22
   eval { $f = locate($test_mod) };
   like( $@, qr/invalid \@INC/, 'b0rken arrayref return in INC');
   ok( !defined($f), "\$f is not a filehandle");

@@ -1,7 +1,7 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.1;
+  $VERSION  = 1.2;
   $Cache    = 0;
   $Global   = 1;
 
@@ -79,7 +79,7 @@
     my $path = catfile reverse(@dirs), "$file.pm";
 
     return $INC{$path}
-      if     ( $Module::Locate::Cache and $Module::Locate::Global )
+      if   ( $Module::Locate::Cache and $Module::Locate::Global )
          and is_mod_loaded($path);
 
     my @paths;
@@ -101,7 +101,8 @@
         if -f catfile($_, $path);
     }
 
-    croak("Can't locate $path in \@INC (\@INC contains: @INC")
+    # croak("Can't locate $path in \@INC (\@INC contains: @INC")
+    return
       unless defined $paths[0];
 
     $INC{$path} = $paths[0]
@@ -217,7 +218,8 @@ Given a module (in standard perl bareword format) locate the path of the module.
 If called in a scalar context the first path found will be returned, if called
 in a list context a list of paths where the module was found. Also, if
 references have been placed in C<@INC> then a filehandle will be returned, as
-defined in the C<require> documentation.
+defined in the C<require> documentation. An empty C<return> is used if the
+module couldn't be located.
 
 =item C<get_source>
 
@@ -246,6 +248,21 @@ symbol table loaded (checks by walking the C<%main::> stash).
 =head1 Changes
 
 =over 4
+
+=item 1.2
+
+=over 8
+
+=item *
+
+No longer C<croak()>s when C<locate()> fails to find the module (which is much
+nicer and is consistent with the documentation).
+
+=item *
+
+C<Build.PL> should now play nice with C<CPAN> installs
+
+=back
 
 =item 1.1
 

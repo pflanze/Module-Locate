@@ -1,5 +1,10 @@
 Revision history for Perl extension Module::Locate
 
+1.2 Tue Nov 25 13:30:23 GMT 2003
+  * No longer "croak()"s when "locate()" fails to find the module (which is
+    much nicer and is consistent with the documentation).
+  * "Build.PL" should now play nice with "CPAN" installs
+
 1.1 Fri Nov  7 15:59:10 GMT 2003
   * fixed "$PkgRe" to be functional
   * added "is_mod_loaded()" and "is_pkg_loaded()" functions
