@@ -1,4 +1,10 @@
 Revision history for Perl extension Module::Locate
 
+1.1 Fri Nov  7 15:59:10 GMT 2003
+  * fixed "$PkgRe" to be functional
+  * added "is_mod_loaded()" and "is_pkg_loaded()" functions
+  * added ':all' "import()" option
+  * hopefully fixed b0rken CPAN make process ...
+
 1.0 Tue Sep 23 11:51:20 BST 2003
   * Initial release

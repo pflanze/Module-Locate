@@ -2,6 +2,7 @@ lib/Module/Locate.pm
 t/01simple.t
 t/02locate.t
 t/03regex.t
+t/04isloaded.t
 t/MLtest/hereiam.pm
 Build.PL
 MANIFEST

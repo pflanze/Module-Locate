@@ -1,5 +1,9 @@
 use Module::Build;
 
+## get around b0rken CPAN
+exec("$^X Build.PL && ./Build")
+  if $ARGV[-1] eq 'Build';
+
 Module::Build->new(
   module_name => 'Module::Locate',
   license     => 'perl',

@@ -1,17 +1,22 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.0;
+  $VERSION  = 1.1;
   $Cache    = 0;
   $Global   = 1;
-  $PkgRe    = qr{ \A [_a-zA-Z]
-                  (?:
-                   (?: \w* )
-                   (?:
-                    (?: '|:: )
-                    (?: \w+ )
-                   )?
-                  )* \z }x;
+
+  $ident_re = qr{[_a-z]\w*}i;
+  $sep_re   = qr{'|::};
+  $PkgRe    = qr{
+    \A
+      (?: $ident_re (?: $sep_re $ident_re )* )
+    \z
+  }x;
+
+  @All      = qw(
+    locate get_source acts_like_fh
+    is_mod_loaded is_pkg_loaded
+  );
 
   sub import {
     my $pkg = caller;
@@ -26,6 +31,12 @@
 
       $Global = shift @args, next
         if /^global$/i;
+
+      if(/^:all$/i) {
+        *{ "$pkg\::$_" } = \&$_
+          for @All;
+        next;
+      }
 
       warnings::warnif("not in ".__PACKAGE__." import list: '$_'");
     }
@@ -69,7 +80,7 @@
 
     return $INC{$path}
       if     ( $Module::Locate::Cache and $Module::Locate::Global )
-         and ( exists $INC{$path} and defined $INC{$path}         );
+         and is_mod_loaded($path);
 
     my @paths;
 
@@ -125,6 +136,34 @@
       or ( overload::Method($_[0], '<>')                )
     ) );
   }
+
+  sub is_mod_loaded {
+    my $mod  = shift;
+    
+    croak("Invalid package name '$mod'")
+      unless $mod =~ $Module::Locate::PkgRe;
+    
+    my $path = catfile split '::' => "$mod.pm";
+
+    return exists $INC{$path} and defined $INC{$path};
+  }
+
+  sub is_pkg_loaded {
+    my $pkg = shift;
+
+    croak("Invalid package name '$pkg'")
+      unless $pkg =~ $Module::Locate::PkgRe;
+
+    my @tbls = map "${_}::", split('::' => $pkg);
+    my $tbl  = \%main::;
+    
+    for(@tbls) {
+      return unless exists $tbl->{$_};
+      $tbl = $tbl->{$_};
+    }
+    
+    return !!$pkg;
+  }
 }
 
 q[ The better be make-up, and it better be good ];
@@ -170,6 +209,8 @@ If C<Cache =E<gt> BOOL> is passed in, then every subsequent search for a module
 will just use the path stored in C<%INC>, as opposed to performing another
 search. This is B<off> by default.
 
+iF C<:all> is passed in then all subroutines are exported.
+
 =item C<locate>
 
 Given a module (in standard perl bareword format) locate the path of the module.
@@ -190,11 +231,43 @@ is a bareword filehandle, then if it inherits from C<IO::Handle> and lastly if
 it overloads the C<E<lt>E<gt>> operator. If this is missing any other standard
 filehandle behaviour, please send me an e-mail.
 
+=item C<is_mod_loaded()>
+
+Given a module (like L<locate()>), return true if the module has been loaded
+(i.e exists in the C<%INC> hash).
+
+=item C<is_pkg_loaded()>
+
+Given a package name (like C<locate()>), check if the package has an existing
+symbol table loaded (checks by walking the C<%main::> stash).
+
 =back
 
 =head1 Changes
 
 =over 4
+
+=item 1.1
+
+=over 8
+
+=item *
+
+fixed C<$PkgRe> to be functional
+
+=item *
+
+added C<is_mod_loaded()> and C<is_pkg_loaded()> functions
+
+=item *
+
+added ':all' C<import()> option
+
+=item *
+
+hopefully fixed b0rken CPAN make process ...
+
+=back
 
 =item 1.0
 
@@ -214,6 +287,6 @@ Dan Brook C<E<lt>broquaint@hotmail.comE<gt>>
 
 =head1 SEE ALSO
 
-C<perl>, C<use>, C<require>
+L<perl>, C<use>, C<require>
 
 =cut

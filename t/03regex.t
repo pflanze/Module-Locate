@@ -4,28 +4,23 @@ use strict;
 
 use Module::Locate;
 
-my %pkgs = qw[
-  A 1
-  0a 0
-  foo 1
-  f@o 0
-  f-o 0
-  
-  foo:: 0
-  foo::bar 1
-  foo::0a 1
-  foo::bar::baz::quux 1
-  
-  foo' 0
-  foo'bar 1
-  foo'0a 1
-  foo'bar'baz'quux 1
-];
+my %tests = map { chomp; split; reverse @_ } <DATA>;
 
-my $res;
-print "\n";
-
-for(keys %pkgs) {
-  $res = $_ =~ $Module::Locate::PkgRe ? 1 : 0;
-  ok( $res == $pkgs{$_}, "new[$res]: $_" );
+while(my($test,$res) = each %tests) {
+  if($res == $test =~ $Module::Locate::PkgRe) {
+    ok(1, "$test - ". ($res ? join(', ' => $test =~ /$Module::Locate::PkgRe/) : "expected failure"));
+  } else {
+    ok(0, "$test - ABJECT FAILURE\n");
+  }
 }
+
+__DATA__
+1 foo
+1 foo::bar
+1 foo::bar::baz
+1 a
+1 a::b
+1 a::bb::c
+0 9pkg::b0rk
+0 brok:en
+0 valid::sym::table::
