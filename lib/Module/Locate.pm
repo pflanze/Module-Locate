@@ -1,17 +1,13 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.3;
+  $VERSION  = 1.4;
   $Cache    = 0;
   $Global   = 1;
 
   $ident_re = qr{[_a-z]\w*}i;
   $sep_re   = qr{'|::};
-  $PkgRe    = qr{
-    \A
-      (?: $ident_re (?: $sep_re $ident_re )* )
-    \z
-  }x;
+  $PkgRe    = qr{\A(?:$ident_re(?:$sep_re$ident_re)*)\z};
 
   @All      = qw(
     locate get_source acts_like_fh
@@ -246,6 +242,16 @@ symbol table loaded (checks by walking the C<%main::> stash).
 =head1 Changes
 
 =over 4
+
+=item 1.4
+
+=over 8
+
+=item *
+
+now backward compatible with 5.00503
+
+=back
 
 =item 1.3
 

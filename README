@@ -1,4 +1,4 @@
-Module/Locate version 1.3
+Module/Locate version 1.4
 =========================
 
 Using locate(), return the path that require would find for a given module (it

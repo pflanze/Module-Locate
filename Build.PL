@@ -9,7 +9,7 @@ Module::Build->new(
   license     => 'perl',
 
   requires    => {
-             'perl'                  => '5.6.1',
+             'perl'                  => '5.005_03',
              'File::Spec::Functions' => 0,
              'IO::File'              => 0,
              'Carp'                  => 0,

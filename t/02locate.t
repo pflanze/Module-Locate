@@ -29,13 +29,14 @@ my($test_mod, $test_fn) = qw( MLtest::hereiam t/MLtest/hereiam.pm );
   $path = locate($test_mod);
 
   # no. 5
-  ok( not($path), "locate() couldn't find what wasn't there");
+  ok(!$path, "locate() couldn't find what wasn't there");
 }
 
 {
   unshift @INC => sub {
-    open(my $fh, '<', $test_fn) or die "ack: $! [$test_fn]\n";
-    $fh
+    local *FH;
+    open(FH => $test_fn) or die "ack: $! [$test_fn]\n";
+    *FH;
   };
 
   # no. 6, 7
