@@ -1,18 +1,8 @@
 --- #YAML:1.0
 name: Module-Locate
-version: 1.5
+version: 1.6
+author:
+  - Dan Brook C<< <cpan@broquaint.com> >>
+abstract: locate modules in the same fashion as C<require> and C<use>
 license: perl
-distribution_type: module
-requires:
-  Carp: 0
-  File::Spec::Functions: 0
-  IO::File: 0
-  perl: 5.005_03
-recommends: {}
-build_requires: {}
-conflicts: {}
-provides:
-  Module::Locate:
-    file: lib/Module/Locate.pm
-    version: 1.5
-generated_by: Module::Build version 0.21
+generated_by: Module::Build version 0.261, without YAML.pm

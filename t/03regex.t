@@ -4,7 +4,7 @@ use strict;
 
 use Module::Locate;
 
-my %tests = map { chomp; split; reverse @_ } <DATA>;
+my %tests = map { chomp; @_ = split; reverse @_ } <DATA>;
 
 while(my($test,$res) = each %tests) {
   if($res == $test =~ $Module::Locate::PkgRe) {

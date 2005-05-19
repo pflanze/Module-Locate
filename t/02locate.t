@@ -5,6 +5,7 @@ use warnings;
 
 use lib 't/';
 use IO::File;
+use File::Spec;
 
 require Module::Locate;
 
@@ -14,7 +15,9 @@ Module::Locate->import(qw/ locate acts_like_fh /);
 can_ok(__PACKAGE__, 'locate');
 can_ok(__PACKAGE__, 'acts_like_fh');
 
-my($test_mod, $test_fn) = qw( MLtest::hereiam t/MLtest/hereiam.pm );
+my($test_mod, $test_fn) = (
+  'MLtest::hereiam', File::Spec->catfile(qw/t MLtest hereiam.pm/)
+);
 
 {
   my $path = locate($test_mod);

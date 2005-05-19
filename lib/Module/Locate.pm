@@ -1,7 +1,7 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.5;
+  $VERSION  = 1.6;
   $Cache    = 0;
   $Global   = 1;
 
@@ -34,7 +34,7 @@
         next;
       }
 
-      warnings::warnif("not in ".__PACKAGE__." import list: '$_'");
+      warnings::warn("not in ".__PACKAGE__." import list: '$_'");
     }
   }
 
@@ -117,7 +117,7 @@
         UNIVERSAL::can($c, 'INC') ?
           $c->INC( $path )
         :
-          warnings::warnif("invalid reference in \@INC '$c'")
+          warnings::warn("invalid reference in \@INC '$c'")
     ;
 
     return $ret;
@@ -138,7 +138,8 @@
     croak("Invalid package name '$mod'")
       unless $mod =~ $Module::Locate::PkgRe;
     
-    my $path = catfile split '::' => "$mod.pm";
+    ## it looks like %INC entries automagically use / as a separator
+    my $path = join '/', split '::' => "$mod.pm";
 
     return exists $INC{$path} and defined $INC{$path};
   }
@@ -161,7 +162,7 @@
   }
 }
 
-q[ The better be make-up, and it better be good ];
+q[ That better be make-up, and it better be good ];
 
 =pod
 
@@ -242,6 +243,16 @@ symbol table loaded (checks by walking the C<%main::> stash).
 =head1 Changes
 
 =over 4
+
+=item 1.6
+
+=over 8
+
+=item *
+
+fixed failing Win32 tests (thanks barbie!)
+
+=back
 
 =item 1.5
 
@@ -328,7 +339,7 @@ Initial release
 
 =head1 AUTHOR
 
-Dan Brook C<E<lt>broquaint@hotmail.comE<gt>>
+Dan Brook C<< <cpan@broquaint.com> >>
 
 =head1 SEE ALSO
 
