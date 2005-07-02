@@ -1,5 +1,11 @@
 Revision history for Perl extension Module::Locate
 
+1.7 Sat Jul 2 15:41:55 GMT 2005
+  * "locate" now also accepts filenames
+  * added "mod_to_path" function
+  * dropped Module::Build and warnings dependencies
+  * dropped Changes section from module POD
+
 1.6 Thu May 19 21:48:39 GMT 2005
   * fixed failing Win32 tests (thanks barbie!)
 

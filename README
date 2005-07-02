@@ -1,4 +1,4 @@
-Module/Locate version 1.6
+Module/Locate version 1.7
 =========================
 
 Using locate(), return the path that require would find for a given module (it
@@ -10,19 +10,17 @@ INSTALLATION
 
 To install this module type the following:
 
-   perl Build.PL
-   ./Build
-   ./Build test
-   ./Build install
+   perl Makefile.PL
+   make
+   make test
+   make install
 
 DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  warnings
   IO::File
   File::Spec
-  Module::Build
   Test::More
 
 COPYRIGHT AND LICENCE

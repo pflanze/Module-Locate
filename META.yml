@@ -1,8 +1,10 @@
---- #YAML:1.0
-name: Module-Locate
-version: 1.6
-author:
-  - Dan Brook C<< <cpan@broquaint.com> >>
-abstract: locate modules in the same fashion as C<require> and C<use>
-license: perl
-generated_by: Module::Build version 0.261, without YAML.pm
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         Module-Locate
+version:      1.7
+version_from: lib/Module/Locate.pm
+installdirs:  site
+requires:
+
+distribution_type: module
+generated_by: ExtUtils::MakeMaker version 6.17

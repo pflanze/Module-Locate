@@ -1,4 +1,4 @@
-use Test::More tests => 24;
+use Test::More tests => 27;
 
 use strict;
 use warnings;
@@ -20,6 +20,25 @@ my($test_mod, $test_fn) = (
 );
 
 {
+  my $path = locate($test_fn);
+  
+  # no. 3, 4
+  ok( defined $path, "\$path was assigned something");
+  like( $path, qr{\Q$test_fn\E\z},
+        "module found in predicted place: $path");
+
+  {
+    local @INC = @INC[1 .. $#INC];
+
+    $path = locate($test_mod);
+
+    # no. 5
+    ok(!$path, "locate() couldn't find what wasn't there");
+  }
+}
+
+
+{
   my $path = locate($test_mod);
   
   # no. 3, 4
@@ -27,12 +46,14 @@ my($test_mod, $test_fn) = (
   like( $path, qr{\Q$test_fn\E\z},
         "module found in predicted place: $path");
 
-  shift @INC;
+  {
+    local @INC = @INC[1 .. $#INC];
 
-  $path = locate($test_mod);
+    $path = locate($test_mod);
 
-  # no. 5
-  ok(!$path, "locate() couldn't find what wasn't there");
+    # no. 5
+    ok(!$path, "locate() couldn't find what wasn't there");
+  }
 }
 
 {

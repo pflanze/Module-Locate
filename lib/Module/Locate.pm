@@ -1,7 +1,7 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.6;
+  $VERSION  = 1.7;
   $Cache    = 0;
   $Global   = 1;
 
@@ -11,7 +11,7 @@
 
   @All      = qw(
     locate get_source acts_like_fh
-    is_mod_loaded is_pkg_loaded
+    mod_to_path is_mod_loaded is_pkg_loaded
   );
 
   sub import {
@@ -34,13 +34,11 @@
         next;
       }
 
-      warnings::warn("not in ".__PACKAGE__." import list: '$_'");
+      warn("not in ".__PACKAGE__." import list: '$_'");
     }
   }
 
   use strict;
-  use warnings;
-  use warnings::register;
 
   use IO::File;
   use overload ();
@@ -62,17 +60,14 @@
     local $/;
     return <$fh>;
   }
-
+  
   sub locate {
     my $pkg = $_[-1];
 
-    croak("Null filename used")
+    croak("Undefined filename provided")
       unless defined $pkg;
-    croak("Invalid package name '$pkg'")
-      unless $pkg =~ $Module::Locate::PkgRe;
-
-    my($file, @dirs) = reverse split '::' => $pkg;
-    my $path = catfile reverse(@dirs), "$file.pm";
+      
+    my $path = index($pkg, '.') == -1 ? mod_to_path($pkg)  : $pkg;
 
     return $INC{$path}
       if   ( $Module::Locate::Cache and $Module::Locate::Global )
@@ -105,6 +100,16 @@
     return wantarray ? @paths : $INC{$path};
   }
 
+  sub mod_to_path {
+    my $pkg = shift;
+
+    croak("Invalid package name '$pkg'")
+      unless $pkg =~ $Module::Locate::PkgRe;
+
+    my($file, @dirs) = reverse split '::' => $pkg;
+    return catfile reverse(@dirs), "$file.pm";
+  }
+
   sub coderefs_in_INC {
     my($path, $c) = reverse @_;
 
@@ -117,7 +122,7 @@
         UNIVERSAL::can($c, 'INC') ?
           $c->INC( $path )
         :
-          warnings::warn("invalid reference in \@INC '$c'")
+          warn("invalid reference in \@INC '$c'")
     ;
 
     return $ret;
@@ -174,19 +179,19 @@ Module::Locate - locate modules in the same fashion as C<require> and C<use>
 
   use Module::Locate qw/ locate get_source /;
 
-  plugin( locate "This::Module" );
-  munge(  get_source "Another::Module::Here" );
+  add_plugin( locate "This::Module" );
+  eval 'use strict; ' . get_source('legacy_code.plx');
   
-  if(locate "Some::Module") {
-    ## do stuff
-  }
 
 =head1 DESCRIPTION
 
 Using C<locate()>, return the path that C<require> would find for a given
-module (it can also return a filehandle if a reference in C<@INC> has been
-used). This means you can test for the existence, or find the path for, modules
-without having to evaluate the code they contain.
+module or filename (it can also return a filehandle if a reference in C<@INC>
+has been used). This means you can test for the existence, or find the path
+for, modules without having to evaluate the code they contain.
+
+This module also comes with accompanying utility functions that are used within
+the module itself (except for C<get_source>) and are available for import.
 
 =head1 FUNCTIONS
 
@@ -216,6 +221,9 @@ found. Also, if references have been placed in C<@INC> then a filehandle will
 be returned, as defined in the C<require> documentation. An empty C<return> is
 used if the module couldn't be located.
 
+As of version C<1.7> a filename can also be provided to further mimic the lookup
+behaviour of C<require>/C<use>.
+
 =item C<get_source>
 
 When provided with a package name, retrieve the source of the module that is
@@ -228,10 +236,15 @@ is a bareword filehandle, then if it inherits from C<IO::Handle> and lastly if
 it overloads the C<E<lt>E<gt>> operator. If this is missing any other standard
 filehandle behaviour, please send me an e-mail.
 
+=item C<mod_to_path>
+
+Given a module name convert it to a relative path e.g C<Foo::Bar> would become
+C<Foo/Bar.pm>.
+
 =item C<is_mod_loaded>
 
-Given a module (like C<locate()>), return true if the module has been loaded
-(i.e exists in the C<%INC> hash).
+Given a module name (like C<locate()>), return true if the module has been
+loaded (i.e exists in the C<%INC> hash).
 
 =item C<is_pkg_loaded>
 
@@ -240,102 +253,11 @@ symbol table loaded (checks by walking the C<%main::> stash).
 
 =back
 
-=head1 Changes
+=head1 BUGS
 
-=over 4
+No known bugs yet, but if you find any, please report them at:
 
-=item 1.6
-
-=over 8
-
-=item *
-
-fixed failing Win32 tests (thanks barbie!)
-
-=back
-
-=item 1.5
-
-=over 8
-
-=item *
-
-added the ubiquitous C<Makefile.PL> (thanks C<Module::Build>!)
-
-=back
-
-=item 1.4
-
-=over 8
-
-=item *
-
-now backward compatible with 5.00503
-
-=back
-
-=item 1.3
-
-=over 8
-
-=item *
-
-Tidied up POD.
-
-=item *
-
-C<acts_like_fh()> now tests plain globs i.e C<*FH>
-
-=back
-
-=item 1.2
-
-=over 8
-
-=item *
-
-No longer C<croak()>s when C<locate()> fails to find the module (which is much
-nicer and is consistent with the documentation).
-
-=item *
-
-C<Build.PL> should now play nice with C<CPAN> installs
-
-=back
-
-=item 1.1
-
-=over 8
-
-=item *
-
-fixed C<$PkgRe> to be functional
-
-=item *
-
-added C<is_mod_loaded()> and C<is_pkg_loaded()> functions
-
-=item *
-
-added ':all' C<import()> option
-
-=item *
-
-hopefully fixed b0rken CPAN make process ...
-
-=back
-
-=item 1.0
-
-=over 8
-
-=item *
-
-Initial release
-
-=back
-
-=back
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Module-Locate>
 
 =head1 AUTHOR
 
