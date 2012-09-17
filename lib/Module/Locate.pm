@@ -1,7 +1,7 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.7;
+  $VERSION  = 1.71;
   $Cache    = 0;
   $Global   = 1;
 
@@ -178,10 +178,9 @@ Module::Locate - locate modules in the same fashion as C<require> and C<use>
 =head1 SYNOPSIS
 
   use Module::Locate qw/ locate get_source /;
-
+  
   add_plugin( locate "This::Module" );
   eval 'use strict; ' . get_source('legacy_code.plx');
-  
 
 =head1 DESCRIPTION
 
@@ -212,7 +211,7 @@ If C<Cache =E<gt> BOOL> is passed, then every subsequent search for a module
 will just use the path stored in C<%INC>, as opposed to performing another
 search. This is B<off> by default.
 
-=item C<locate>
+=item C<locate($module_name)>
 
 Given a module name as a string (in standard perl bareword format) locate the
 path of the module. If called in a scalar context the first path found will be
@@ -224,10 +223,11 @@ used if the module couldn't be located.
 As of version C<1.7> a filename can also be provided to further mimic the lookup
 behaviour of C<require>/C<use>.
 
-=item C<get_source>
+=item C<get_source($module_name)>
 
-When provided with a package name, retrieve the source of the module that is
-found.
+When provided with a package name, gets the path using C<locate()>.
+If C<locate()> returned a path, then the contents of that file are returned
+by C<get_source()> in a scalar.
 
 =item C<acts_like_fh>
 
@@ -236,26 +236,30 @@ is a bareword filehandle, then if it inherits from C<IO::Handle> and lastly if
 it overloads the C<E<lt>E<gt>> operator. If this is missing any other standard
 filehandle behaviour, please send me an e-mail.
 
-=item C<mod_to_path>
+=item C<mod_to_path($module_name)>
 
-Given a module name convert it to a relative path e.g C<Foo::Bar> would become
-C<Foo/Bar.pm>.
+Given a module name,
+converts it to a relative path e.g C<Foo::Bar> would become C<Foo/Bar.pm>.
 
-=item C<is_mod_loaded>
+=item C<is_mod_loaded($module_name)>
 
-Given a module name (like C<locate()>), return true if the module has been
+Given a module name, return true if the module has been
 loaded (i.e exists in the C<%INC> hash).
 
-=item C<is_pkg_loaded>
+=item C<is_pkg_loaded($package_name)>
 
 Given a package name (like C<locate()>), check if the package has an existing
 symbol table loaded (checks by walking the C<%main::> stash).
 
 =back
 
+=head1 REPOSITORY
+
+https://github.com/neilbowers/Module-Locate
+
 =head1 BUGS
 
-No known bugs yet, but if you find any, please report them at:
+Bugs are tracked using RT (bug you can also raise Github issues if you prefer):
 
 L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Module-Locate>
 
@@ -265,6 +269,6 @@ Dan Brook C<< <cpan@broquaint.com> >>
 
 =head1 SEE ALSO
 
-L<perl>, C<use>, C<require>
+L<perl>, C<use>, C<require>, L<App::Module::Locate> and L<mlocate>.
 
 =cut

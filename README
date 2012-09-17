@@ -1,5 +1,5 @@
-Module/Locate version 1.7
-=========================
+Module/Locate version 1.71
+==========================
 
 Using locate(), return the path that require would find for a given module (it
 can also return a filehandle if a reference in INC has been used). This means
@@ -25,7 +25,7 @@ This module requires these other modules and libraries:
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2005 Dan Brook
+Copyright (C) 2005-2012 Dan Brook
 
 This code is distributed under the same copyright terms as Perl itself.
 
