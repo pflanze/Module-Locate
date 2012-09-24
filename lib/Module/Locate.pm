@@ -1,7 +1,7 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.71;
+  $VERSION  = 1.72;
   $Cache    = 0;
   $Global   = 1;
 
@@ -269,6 +269,9 @@ Dan Brook C<< <cpan@broquaint.com> >>
 
 =head1 SEE ALSO
 
-L<perl>, C<use>, C<require>, L<App::Module::Locate> and L<mlocate>.
+A review of modules that can be used to get the path (and often other information)
+for one or more modules: L<http://neilb.org/reviews/module-path.html>.
+
+L<App::Module::Locate> and L<mlocate>.
 
 =cut

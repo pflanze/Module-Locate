@@ -1,5 +1,9 @@
 Revision history for Perl extension Module::Locate
 
+1.72 2012-09-24
+    - Updated SEE ALSO to include link to review of modules
+      for getting the path of a module.
+
 1.71 2012-09-17
     - Added github repository to documentation
     - Updated Makefile.PL with prereqs and github repository info
