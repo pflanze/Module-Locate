@@ -1,10 +1,8 @@
 Revision history for Perl extension Module::Locate
 
-1.74
+1.73 2013-07-20
     - Fixed up dates in this file to satisfy CPAN::Changes::Spec
     - Removed version number from README
-
-1.73
     - Made the repository URL in the pod a link
 
 1.72 2012-09-24
