@@ -6,6 +6,7 @@ WriteMakefile(
     NAME           => 'Module::Locate',
     VERSION_FROM   => 'lib/Module/Locate.pm',
     AUTHOR         => 'Dan Brook <cpan@broquaint.com>',
+    LICENSE        => 'perl',
     PREREQ_PM      => {
                           'strict'                => 0,
                           'IO::File'              => 0,

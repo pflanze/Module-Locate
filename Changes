@@ -1,5 +1,8 @@
 Revision history for Perl extension Module::Locate
 
+1.74 2013-07-20
+    - Added license metadata to Makefile.PL and to the pod
+
 1.73 2013-07-20
     - Fixed up dates in this file to satisfy CPAN::Changes::Spec
     - Removed version number from README

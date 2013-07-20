@@ -1,7 +1,7 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.73;
+  $VERSION  = 1.74;
   $Cache    = 0;
   $Global   = 1;
 
@@ -253,6 +253,13 @@ symbol table loaded (checks by walking the C<%main::> stash).
 
 =back
 
+=head1 SEE ALSO
+
+A review of modules that can be used to get the path (and often other information)
+for one or more modules: L<http://neilb.org/reviews/module-path.html>.
+
+L<App::Module::Locate> and L<mlocate>.
+
 =head1 REPOSITORY
 
 L<https://github.com/neilbowers/Module-Locate>
@@ -267,11 +274,9 @@ L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Module-Locate>
 
 Dan Brook C<< <cpan@broquaint.com> >>
 
-=head1 SEE ALSO
+=head1 LICENSE
 
-A review of modules that can be used to get the path (and often other information)
-for one or more modules: L<http://neilb.org/reviews/module-path.html>.
-
-L<App::Module::Locate> and L<mlocate>.
+This is free software; you can redistribute it and/or modify it under the same terms as
+Perl itself.
 
 =cut
