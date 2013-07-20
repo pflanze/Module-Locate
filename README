@@ -1,5 +1,5 @@
-Module/Locate version 1.71
-==========================
+Module/Locate
+=============
 
 Using locate(), return the path that require would find for a given module (it
 can also return a filehandle if a reference in INC has been used). This means
