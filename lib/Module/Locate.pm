@@ -1,7 +1,7 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.72;
+  $VERSION  = 1.73;
   $Cache    = 0;
   $Global   = 1;
 
@@ -255,7 +255,7 @@ symbol table loaded (checks by walking the C<%main::> stash).
 
 =head1 REPOSITORY
 
-https://github.com/neilbowers/Module-Locate
+L<https://github.com/neilbowers/Module-Locate>
 
 =head1 BUGS
 

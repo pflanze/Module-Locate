@@ -1,5 +1,12 @@
 Revision history for Perl extension Module::Locate
 
+1.74
+    - Fixed up dates in this file to satisfy CPAN::Changes::Spec
+    - Removed version number from README
+
+1.73
+    - Made the repository URL in the pod a link
+
 1.72 2012-09-24
     - Updated SEE ALSO to include link to review of modules
       for getting the path of a module.
@@ -31,7 +38,7 @@ Revision history for Perl extension Module::Locate
     - Tidied up POD.
     - "acks_like_fh()" now tests plain globs i.e "*FH"
 
-1.2 Tue Nov 25 13:30:23 GMT 2003
+1.2 2003-11-25
     - No longer "croak()"s when "locate()" fails to find the module (which is
       much nicer and is consistent with the documentation).
     - "Build.PL" should now play nice with "CPAN" installs
