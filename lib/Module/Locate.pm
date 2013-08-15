@@ -1,15 +1,17 @@
 {
   package Module::Locate;
 
-  $VERSION  = 1.74;
-  $Cache    = 0;
-  $Global   = 1;
+  use warnings;
 
-  $ident_re = qr{[_a-z]\w*}i;
-  $sep_re   = qr{'|::};
-  $PkgRe    = qr{\A(?:$ident_re(?:$sep_re$ident_re)*)\z};
+  our $VERSION  = 1.76;
+  our $Cache    = 0;
+  our $Global   = 1;
 
-  @All      = qw(
+  my $ident_re = qr{[_a-z]\w*}i;
+  my $sep_re   = qr{'|::};
+  our $PkgRe    = qr{\A(?:$ident_re(?:$sep_re$ident_re)*)\z};
+
+  my @All      = qw(
     locate get_source acts_like_fh
     mod_to_path is_mod_loaded is_pkg_loaded
   );
@@ -146,7 +148,7 @@
     ## it looks like %INC entries automagically use / as a separator
     my $path = join '/', split '::' => "$mod.pm";
 
-    return exists $INC{$path} and defined $INC{$path};
+    return (exists $INC{$path} && defined $INC{$path});
   }
 
   sub is_pkg_loaded {

@@ -1,5 +1,12 @@
 Revision history for Perl extension Module::Locate
 
+1.76 2013-08-15
+    - Added in "use warnings" after looking at CPANTS
+
+1.75 2013-08-14
+    - Fixed an operator precedence bug in is_mod_loaded()
+      RT#87204: report and fix from Reini Urban
+
 1.74 2013-07-20
     - Added license metadata to Makefile.PL and to the pod
 
