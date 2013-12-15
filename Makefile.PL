@@ -9,6 +9,7 @@ WriteMakefile(
     LICENSE        => 'perl',
     PREREQ_PM      => {
                           'strict'                => 0,
+                          'warnings'              => 0,
                           'IO::File'              => 0,
                           'overload'              => 0,
                           'Carp'                  => 0,
