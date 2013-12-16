@@ -2,6 +2,12 @@ require 5.005;
 
 use ExtUtils::MakeMaker;
 
+my $mm_ver = $ExtUtils::MakeMaker::VERSION;
+if ($mm_ver =~ /_/) { # dev version
+    $mm_ver = eval $mm_ver;
+    die $@ if $@;
+}
+
 WriteMakefile(
     NAME           => 'Module::Locate',
     VERSION_FROM   => 'lib/Module/Locate.pm',
@@ -18,6 +24,11 @@ WriteMakefile(
     BUILD_REQUIRES => {
                           'Test::More'            => 0,
                       },
+
+    ($mm_ver >= 6.48
+        ? (MIN_PERL_VERSION => '5.8.8')
+        : ()
+    ),
 
     META_MERGE => {
         resources => {

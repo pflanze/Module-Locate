@@ -4,7 +4,7 @@
   use warnings;
   use 5.8.8;
 
-  our $VERSION  = 1.77;
+  our $VERSION  = 1.78;
   our $Cache    = 0;
   our $Global   = 1;
 
