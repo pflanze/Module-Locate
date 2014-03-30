@@ -1,10 +1,15 @@
 Revision history for Perl extension Module::Locate
 
-1.79 2014-03-31
+1.78_01 2014-03-31
     - mod_to_path() now always uses '/' as directory separator;
       this problem was noted by DAGOLDEN in RT#30523. Added a small
       testsuite for mod_to_path(), so that CPAN Testers can confirm
       correct behaviour on Windows.
+    - Removed the Global and Cache options. Checked all the dists using
+      this module on CPAN. Only one was using Global, but not relying on
+      the odd quirk of that. Hence the developer release first.
+    - Sorted out the confusion between when to use '/' and when not,
+      in locate().
 
 1.78 2013-12-16
     - Added MIN_PERL_VERSION to Makefile.PL, as previous attempt

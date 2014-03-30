@@ -20,7 +20,7 @@ my($test_mod, $test_fn) = (
 );
 
 {
-  my $path = locate($test_fn);
+  my $path = locate($test_mod);
   
   # no. 3, 4
   ok( defined $path, "\$path was assigned something");

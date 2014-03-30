@@ -4,7 +4,7 @@
   use warnings;
   use 5.8.8;
 
-  our $VERSION  = 1.79;
+  our $VERSION  = '1.78_01';
   our $Cache    = 0;
   our $Global   = 1;
 
@@ -70,17 +70,19 @@
     croak("Undefined filename provided")
       unless defined $pkg;
       
-    my $path = index($pkg, '.') == -1 ? mod_to_path($pkg)  : $pkg;
+    my $inc_path = mod_to_path($pkg);
 
-    return $INC{$path}
-      if   ( $Module::Locate::Cache and $Module::Locate::Global )
-         and is_mod_loaded($path);
+    return $INC{$inc_path} if exists($INC{$inc_path}) && !wantarray;
+
+    # On Windows the inc_path will use '/' for directory separator,
+    # but when looking for a module, we need to use the OS's separator.
+    my $partial_path = _mod_to_partial_path($pkg);
 
     my @paths;
 
     for(@INC) {
       if(ref $_) {
-        my $ret = coderefs_in_INC($_, $path);
+        my $ret = coderefs_in_INC($_, $inc_path);
 
         next
           unless defined $ret;
@@ -91,16 +93,13 @@
         return $ret;
       }
 
-      push @paths => catfile($_, $path)
-        if -f catfile($_, $path);
+      my $fullpath = catfile($_, $partial_path);
+      push(@paths, $fullpath) if -f $fullpath;
     }
 
     return unless @paths > 0;
 
-    $INC{$path} = $paths[0]
-      if $Module::Locate::Global;
-
-    return wantarray ? @paths : $INC{$path};
+    return wantarray ? @paths : $paths[0];
   }
 
   sub mod_to_path {
@@ -154,6 +153,12 @@
     my $path = join '/', split '::' => "$mod.pm";
 
     return (exists $INC{$path} && defined $INC{$path});
+  }
+
+  sub _mod_to_partial_path {
+    my $package = shift;
+
+    return catfile(split(/::/, $package)).'.pm';
   }
 
   sub is_pkg_loaded {
@@ -210,13 +215,9 @@ caller's package.
 
 If C<:all> is passed then all subroutines are exported.
 
-If C<Global =E<gt> BOOL> is passed, then the results for module
-searches i.e using C<locate>, will also be stored in C<%INC>, like
-C<require>. This is B<on> by default.
+The B<Global> and B<Cache> options are no longer supported.
+See the BUGS section below.
 
-If C<Cache =E<gt> BOOL> is passed, then every subsequent search for a module
-will just use the path stored in C<%INC>, as opposed to performing another
-search. This is B<off> by default.
 
 =item C<locate($module_name)>
 
@@ -276,6 +277,13 @@ L<App::Module::Locate> and L<mlocate>.
 L<https://github.com/neilbowers/Module-Locate>
 
 =head1 BUGS
+
+In previous versions of this module, if you specified C<Global =E<gt> 1>
+when use'ing this module,
+then looking up a module's path would update C<%INC>,
+even if the module hadn't actually been loaded (yet).
+This meant that if you subsequently tried to load the module,
+it would wrongly not be loaded.
 
 Bugs are tracked using RT (bug you can also raise Github issues if you prefer):
 
