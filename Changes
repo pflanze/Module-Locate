@@ -1,5 +1,11 @@
 Revision history for Perl extension Module::Locate
 
+1.79 2014-03-31
+    - mod_to_path() now always uses '/' as directory separator;
+      this problem was noted by DAGOLDEN in RT#30523. Added a small
+      testsuite for mod_to_path(), so that CPAN Testers can confirm
+      correct behaviour on Windows.
+
 1.78 2013-12-16
     - Added MIN_PERL_VERSION to Makefile.PL, as previous attempt
       to add min perl version to metadata failed. I really should

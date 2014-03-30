@@ -4,7 +4,7 @@
   use warnings;
   use 5.8.8;
 
-  our $VERSION  = 1.78;
+  our $VERSION  = 1.79;
   our $Cache    = 0;
   our $Global   = 1;
 
@@ -104,13 +104,17 @@
   }
 
   sub mod_to_path {
-    my $pkg = shift;
+    my $pkg  = shift;
+    my $path = $pkg;
 
     croak("Invalid package name '$pkg'")
       unless $pkg =~ $Module::Locate::PkgRe;
 
-    my($file, @dirs) = reverse split '::' => $pkg;
-    return catfile reverse(@dirs), "$file.pm";
+    # %INC always uses / as a directory separator, even on Windows
+    $path =~ s!::!/!g;
+    $path .= '.pm' unless $path =~ m!\.pm$!;
+
+    return $path;
   }
 
   sub coderefs_in_INC {
@@ -243,6 +247,10 @@ filehandle behaviour, please send me an e-mail.
 
 Given a module name,
 converts it to a relative path e.g C<Foo::Bar> would become C<Foo/Bar.pm>.
+
+Note that this path will always use '/' for the directory separator,
+even on Windows,
+as that's the format used in C<%INC>.
 
 =item C<is_mod_loaded($module_name)>
 
