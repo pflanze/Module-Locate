@@ -1,6 +1,7 @@
 Revision history for Perl extension Module::Locate
 
 1.80 2015-10-25 NEILB
+    - Switched to Dist::Zilla
     - Updated github repo URL after changing my github username
 
 1.79 2014-04-01
