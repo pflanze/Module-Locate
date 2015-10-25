@@ -1,5 +1,8 @@
 Revision history for Perl extension Module::Locate
 
+1.80 2015-10-25 NEILB
+    - Updated github repo URL after changing my github username
+
 1.79 2014-04-01
     - Don't muck with %INC RT#30523.
     - Get directory separator handling right(er).

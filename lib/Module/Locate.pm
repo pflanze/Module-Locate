@@ -4,7 +4,7 @@
   use warnings;
   use 5.8.8;
 
-  our $VERSION  = '1.79';
+  our $VERSION  = '1.80';
   our $Cache    = 0;
   our $Global   = 1;
 
@@ -274,7 +274,7 @@ L<App::Module::Locate> and L<mlocate>.
 
 =head1 REPOSITORY
 
-L<https://github.com/neilbowers/Module-Locate>
+L<https://github.com/neilb/Module-Locate>
 
 =head1 BUGS
 
