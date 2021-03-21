@@ -1,184 +1,182 @@
-{
-  package Module::Locate;
+package Module::Locate;
 
-  use warnings;
-  use 5.8.8;
+use warnings;
+use 5.8.8;
 
-  our $Cache    = 0;
-  our $Global   = 1;
+our $Cache    = 0;
+our $Global   = 1;
 
-  my $ident_re = qr{[_a-z]\w*}i;
-  my $sep_re   = qr{'|::};
-  our $PkgRe    = qr{\A(?:$ident_re(?:$sep_re$ident_re)*)\z};
+my $ident_re = qr{[_a-z]\w*}i;
+my $sep_re   = qr{'|::};
+our $PkgRe    = qr{\A(?:$ident_re(?:$sep_re$ident_re)*)\z};
 
-  my @All      = qw(
-    locate get_source acts_like_fh
-    mod_to_path is_mod_loaded is_pkg_loaded
-  );
+my @All      = qw(
+  locate get_source acts_like_fh
+  mod_to_path is_mod_loaded is_pkg_loaded
+);
 
-  sub import {
-    my $pkg = caller;
-    my @args = @_[ 1 .. $#_ ];
-    
-    while(local $_ = shift @args) {
-      *{ "$pkg\::$_" } = \&$_ and next
-        if defined &$_;
-
-      $Cache = shift @args, next
-        if /^cache$/i;
-
-      $Global = shift @args, next
-        if /^global$/i;
-
-      if(/^:all$/i) {
-        *{ "$pkg\::$_" } = \&$_
-          for @All;
-        next;
-      }
-
-      warn("not in ".__PACKAGE__." import list: '$_'");
-    }
-  }
-
-  use strict;
-
-  use IO::File;
-  use overload ();
-  use Carp 'croak';
-  use File::Spec::Functions 'catfile';
+sub import {
+  my $pkg = caller;
+  my @args = @_[ 1 .. $#_ ];
   
-  sub get_source {
-    my $pkg = $_[-1];
+  while(local $_ = shift @args) {
+    *{ "$pkg\::$_" } = \&$_ and next
+      if defined &$_;
 
-    my $f = locate($pkg);
+    $Cache = shift @args, next
+      if /^cache$/i;
 
-    my $fh = ( acts_like_fh($f) ?
-      $f
-    :
-      do { my $tmp = IO::File->new($f)
-             or croak("invalid module '$pkg' [$f] - $!"); $tmp }
-    );
+    $Global = shift @args, next
+      if /^global$/i;
 
-    local $/;
-    return <$fh>;
-  }
-  
-  sub locate {
-    my $pkg = $_[-1];
-
-    croak("Undefined filename provided")
-      unless defined $pkg;
-      
-    my $inc_path = mod_to_path($pkg);
-
-    return $INC{$inc_path} if exists($INC{$inc_path}) && !wantarray;
-
-    # On Windows the inc_path will use '/' for directory separator,
-    # but when looking for a module, we need to use the OS's separator.
-    my $partial_path = _mod_to_partial_path($pkg);
-
-    my @paths;
-
-    for(@INC) {
-      if(ref $_) {
-        my $ret = coderefs_in_INC($_, $inc_path);
-
-        next
-          unless defined $ret;
-
-        croak("invalid \@INC subroutine return $ret")
-          unless acts_like_fh($ret);
-
-        return $ret;
-      }
-
-      my $fullpath = catfile($_, $partial_path);
-      push(@paths, $fullpath) if -f $fullpath;
+    if(/^:all$/i) {
+      *{ "$pkg\::$_" } = \&$_
+        for @All;
+      next;
     }
 
-    return unless @paths > 0;
-
-    return wantarray ? @paths : $paths[0];
-  }
-
-  sub mod_to_path {
-    my $pkg  = shift;
-    my $path = $pkg;
-
-    croak("Invalid package name '$pkg'")
-      unless $pkg =~ $Module::Locate::PkgRe;
-
-    # %INC always uses / as a directory separator, even on Windows
-    $path =~ s!::!/!g;
-    $path .= '.pm' unless $path =~ m!\.pm$!;
-
-    return $path;
-  }
-
-  sub coderefs_in_INC {
-    my($path, $c) = reverse @_;
-
-    my $ret = ref($c) eq 'CODE' ?
-      $c->( $c, $path )
-    :
-      ref($c) eq 'ARRAY' ?
-        $c->[0]->( $c, $path )
-      :
-        UNIVERSAL::can($c, 'INC') ?
-          $c->INC( $path )
-        :
-          warn("invalid reference in \@INC '$c'")
-    ;
-
-    return $ret;
-  }
-
-  sub acts_like_fh {
-    no strict 'refs';
-    return ( ref $_[0] and (
-         ( ref $_[0] eq 'GLOB' and defined *{$_[0]}{IO} )
-      or ( UNIVERSAL::isa($_[0], 'IO::Handle')          )
-      or ( overload::Method($_[0], '<>')                )
-    ) or ref \$_[0] eq 'GLOB' and defined *{$_[0]}{IO}  );
-  }
-
-  sub is_mod_loaded {
-    my $mod  = shift;
-    
-    croak("Invalid package name '$mod'")
-      unless $mod =~ $Module::Locate::PkgRe;
-    
-    ## it looks like %INC entries automagically use / as a separator
-    my $path = join '/', split '::' => "$mod.pm";
-
-    return (exists $INC{$path} && defined $INC{$path});
-  }
-
-  sub _mod_to_partial_path {
-    my $package = shift;
-
-    return catfile(split(/::/, $package)).'.pm';
-  }
-
-  sub is_pkg_loaded {
-    my $pkg = shift;
-
-    croak("Invalid package name '$pkg'")
-      unless $pkg =~ $Module::Locate::PkgRe;
-
-    my @tbls = map "${_}::", split('::' => $pkg);
-    my $tbl  = \%main::;
-    
-    for(@tbls) {
-      return unless exists $tbl->{$_};
-      $tbl = $tbl->{$_};
-    }
-    
-    return !!$pkg;
+    warn("not in ".__PACKAGE__." import list: '$_'");
   }
 }
 
-q[ That better be make-up, and it better be good ];
+use strict;
+
+use IO::File;
+use overload ();
+use Carp 'croak';
+use File::Spec::Functions 'catfile';
+
+sub get_source {
+  my $pkg = $_[-1];
+
+  my $f = locate($pkg);
+
+  my $fh = ( acts_like_fh($f) ?
+    $f
+  :
+    do { my $tmp = IO::File->new($f)
+           or croak("invalid module '$pkg' [$f] - $!"); $tmp }
+  );
+
+  local $/;
+  return <$fh>;
+}
+
+sub locate {
+  my $pkg = $_[-1];
+
+  croak("Undefined filename provided")
+    unless defined $pkg;
+    
+  my $inc_path = mod_to_path($pkg);
+
+  return $INC{$inc_path} if exists($INC{$inc_path}) && !wantarray;
+
+  # On Windows the inc_path will use '/' for directory separator,
+  # but when looking for a module, we need to use the OS's separator.
+  my $partial_path = _mod_to_partial_path($pkg);
+
+  my @paths;
+
+  for(@INC) {
+    if(ref $_) {
+      my $ret = coderefs_in_INC($_, $inc_path);
+
+      next
+        unless defined $ret;
+
+      croak("invalid \@INC subroutine return $ret")
+        unless acts_like_fh($ret);
+
+      return $ret;
+    }
+
+    my $fullpath = catfile($_, $partial_path);
+    push(@paths, $fullpath) if -f $fullpath;
+  }
+
+  return unless @paths > 0;
+
+  return wantarray ? @paths : $paths[0];
+}
+
+sub mod_to_path {
+  my $pkg  = shift;
+  my $path = $pkg;
+
+  croak("Invalid package name '$pkg'")
+    unless $pkg =~ $Module::Locate::PkgRe;
+
+  # %INC always uses / as a directory separator, even on Windows
+  $path =~ s!::!/!g;
+  $path .= '.pm' unless $path =~ m!\.pm$!;
+
+  return $path;
+}
+
+sub coderefs_in_INC {
+  my($path, $c) = reverse @_;
+
+  my $ret = ref($c) eq 'CODE' ?
+    $c->( $c, $path )
+  :
+    ref($c) eq 'ARRAY' ?
+      $c->[0]->( $c, $path )
+    :
+      UNIVERSAL::can($c, 'INC') ?
+        $c->INC( $path )
+      :
+        warn("invalid reference in \@INC '$c'")
+  ;
+
+  return $ret;
+}
+
+sub acts_like_fh {
+  no strict 'refs';
+  return ( ref $_[0] and (
+       ( ref $_[0] eq 'GLOB' and defined *{$_[0]}{IO} )
+    or ( UNIVERSAL::isa($_[0], 'IO::Handle')          )
+    or ( overload::Method($_[0], '<>')                )
+  ) or ref \$_[0] eq 'GLOB' and defined *{$_[0]}{IO}  );
+}
+
+sub is_mod_loaded {
+  my $mod  = shift;
+  
+  croak("Invalid package name '$mod'")
+    unless $mod =~ $Module::Locate::PkgRe;
+  
+  ## it looks like %INC entries automagically use / as a separator
+  my $path = join '/', split '::' => "$mod.pm";
+
+  return (exists $INC{$path} && defined $INC{$path});
+}
+
+sub _mod_to_partial_path {
+  my $package = shift;
+
+  return catfile(split(/::/, $package)).'.pm';
+}
+
+sub is_pkg_loaded {
+  my $pkg = shift;
+
+  croak("Invalid package name '$pkg'")
+    unless $pkg =~ $Module::Locate::PkgRe;
+
+  my @tbls = map "${_}::", split('::' => $pkg);
+  my $tbl  = \%main::;
+  
+  for(@tbls) {
+    return unless exists $tbl->{$_};
+    $tbl = $tbl->{$_};
+  }
+  
+  return !!$pkg;
+}
+
+1;
 
 =pod
 
