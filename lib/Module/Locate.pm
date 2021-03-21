@@ -117,17 +117,11 @@ sub mod_to_path {
 sub coderefs_in_INC {
   my($path, $c) = reverse @_;
 
-  my $ret = ref($c) eq 'CODE' ?
-    $c->( $c, $path )
-  :
-    ref($c) eq 'ARRAY' ?
-      $c->[0]->( $c, $path )
-    :
-      UNIVERSAL::can($c, 'INC') ?
-        $c->INC( $path )
-      :
-        warn("invalid reference in \@INC '$c'")
-  ;
+  my $ret =
+      ref($c) eq 'CODE'         ? $c->( $c, $path )      :
+      ref($c) eq 'ARRAY'        ? $c->[0]->( $c, $path ) :
+      UNIVERSAL::can($c, 'INC') ? $c->INC( $path )       :
+      warn("invalid reference in \@INC '$c'");
 
   return $ret;
 }
