@@ -115,7 +115,7 @@ sub mod_to_path {
 }
 
 sub coderefs_in_INC {
-  my($path, $c) = reverse @_;
+  my($c, $path) = @_;
 
   my $ret =
       ref($c) eq 'CODE'         ? $c->( $c, $path )      :
